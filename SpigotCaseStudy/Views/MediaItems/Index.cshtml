@@ -4,20 +4,18 @@
     ViewData["Title"] = "Manage Content";
 }
 <div class="container">
-<div class="row mb-2 mt-3">
-    <div class="col-sm-4">
-        <h2>Manage Content</h2>
-        <hr />
+    <div class="row mb-2 mt-3">
+        <div class="col-sm-4">
+            <h2>Manage Content</h2>
+            <hr />
+        </div>
     </div>
-</div>
     <div class="row mb-3">
         <div class="col-sm-12 mb-5">
             <table class="table table-responsive table-striped table-bordered" id="MediaItemTable">
                 <thead>
                     <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ApiEndpointId)
-                        </th>
+                        <th></th>
                         <th>
                             @Html.DisplayNameFor(model => model.Title)
                         </th>
@@ -36,13 +34,9 @@
                         <th>
                             @Html.DisplayNameFor(model => model.DateLastAccessed)
                         </th>
-                        @*<th>
-                            @Html.DisplayNameFor(model => model.KeyWords)
-                        </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.MediaType)
                         </th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +44,9 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.ApiEndpointId)
+                                <a asp-action="Edit" asp-route-id="@item.MediaItemId">Edit</a> <br />
+                                <a asp-action="Details" asp-route-id="@item.MediaItemId">Details</a> <br />
+                                <a asp-action="Delete" asp-route-id="@item.MediaItemId">Delete</a> <br />
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Title)
@@ -70,17 +66,10 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.DateLastAccessed)
                             </td>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.KeyWords)
-                            </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.MediaType)
                             </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.MediaItemId">Edit</a> <br />
-                                <a asp-action="Details" asp-route-id="@item.MediaItemId">Details</a> <br /> 
-                                <a asp-action="Delete" asp-route-id="@item.MediaItemId">Delete</a> <br />
-                            </td>
+
                         </tr>
                     }
                 </tbody>
