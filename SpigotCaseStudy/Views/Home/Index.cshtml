@@ -1,8 +1,123 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Space Explorer";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container h-100">
+    <div class="col-sm-12 mt-5 text-center">
+        <h4>Explore</h4>
+        <p>Look through the collection of daily images/videos released by NASA.</p>
+    </div>
+    <form id="SearchForm" action="/mediaitems/searchresults">
+        <div class="d-flex justify-content-center">
+            <div class="searchbar mt-2 mb-3">
+                <input class="search_input" type="text" name="q" placeholder="Search..." required>
+                <a href="#" onclick="javascript:$('#SearchForm').submit();" class="search_icon"><i class="fas fa-search"></i></a>
+            </div>
+        </div>
+    </form>
+    <div class="row" id="DailyImageRow">
+        <div class="card mb-3 col-sm-12 col-md-8 offset-md-2 px-0">
+            <iframe id="DailyImageVideo" height="345"></iframe>
+            <img class="card-img-top" id="DailyImage" alt="Card image">
+            <div class="card-body">
+                <h5 class="card-title" id="DailyImageTitle"></h5>
+                <p class="card-text" id="DailyImageDescription"></p>
+                <p class="card-text">
+                    <small class="text-muted">
+                        <label for="DailyImageDate" data-toggle="tooltip" data-placement="right" title="Select a different release dates">Released on</label>
+                        <input class="form-control col-sm-12 col-md-5 border-left-0 border-right-0 border-top-0 rounded-0" type="date" id="DailyImageDate" value="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" onchange="GetDailyImage($(this).val());" />
+                    </small>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="SearchResults" class="card-group">
+            </div>
+        </div>
+    </div>
 </div>
+
+<!--Loader-->
+<div class="modal fade" tabindex="-1" role="dialog" id="LoaderModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="lds-hourglass"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Toast-->
+@section scripts{
+
+    <script>
+        const MIN_DATE_YEAR = 1990;
+
+        $(function () {
+            let today = GetTodaysDate();
+            document.getElementById("DailyImageDate").setAttribute("max", today);
+            document.getElementById("DailyImageDate").setAttribute("min", `${MIN_DATE_YEAR}-01-01`);
+            GetDailyImage($('#DailyImageDate').val());
+            $("#DailyImage").on('load', HideLoader);
+            $("#DailyImage").on('error', HideLoader);
+            $("#DailyImageVideo").on('load', HideLoader);
+            $("#DailyImageVideo").on('error', HideLoader);
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+        function GetDailyImage(date) {
+
+            if (date == 'yyyy-mm-dd')
+                return;
+            if (date == null)
+                return;
+            if (date.length > 4) {
+                let year = Number(date.substring(0, 4));
+                if (year > new Date().getFullYear() || year < MIN_DATE_YEAR)
+                    return;
+            }
+
+            $("#LoaderModal").modal('show');
+
+            $.getJSON("/api/dailyimage?date="+ date).then(function(result) {
+                var dailyImage = JSON.parse(result);
+                if (dailyImage.MediaType == 'video') {
+                    $("#DailyImageVideo").show();
+                    $("#DailyImageVideo").attr("src", `${dailyImage.VideoUrl}`);
+                    $("#DailyImage").hide();
+                } else {
+                    $("#DailyImage").show();
+                    $("#DailyImage").attr("src", `${dailyImage.LargeImageUrl}`);
+                    $("#DailyImageVideo").hide();
+                }
+                $("#DailyImageTitle").html(dailyImage.Title);
+                $("#DailyImageDescription").html(dailyImage.Description);
+            }, function (error) {
+                HideLoader();
+                //TODO: handle error
+            });
+        }
+
+        function HideLoader() {
+            $('#LoaderModal').modal('hide');
+        }
+
+        function GetTodaysDate() {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+            today = yyyy + '-' + mm + '-' + dd;
+            return today;
+        }
+    </script>
+
+}

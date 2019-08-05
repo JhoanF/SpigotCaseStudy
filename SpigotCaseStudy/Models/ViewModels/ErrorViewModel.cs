@@ -1,6 +1,6 @@
 using System;
 
-namespace SpigotCaseStudy.Models
+namespace SpigotCaseStudy.Models.ViewModels
 {
     public class ErrorViewModel
     {

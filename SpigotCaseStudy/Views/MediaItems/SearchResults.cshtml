@@ -1,0 +1,54 @@
+﻿@model List<SpigotCaseStudy.Models.DbModels.MediaItem>
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<div class="container h-100">
+    <div class="col-sm-12 mt-5 text-center">
+        <h4>Search Results</h4>
+    </div>
+    <form id="SearchForm" action="/mediaitems/searchresults">
+        <div class="d-flex justify-content-center">
+            <div class="searchbar mt-2 mb-3">
+                <input class="search_input" type="text" name="q" placeholder="Search..." required>
+                <a href="#" onclick="$('#SearchForm').submit();" class="search_icon"><i class="fas fa-search"></i></a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="container px-2 mb-5">
+        @if (!Model.Any())
+        {
+            <div class="col-sm-12">
+                <p>No results found.</p>
+            </div>
+        }
+        else
+        {
+            <div class="card-deck">
+
+                @foreach (var item in Model)
+                {
+                    if (item.MediaType == "video")
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        <div class="card">
+                            <img class="card-img-top" src="@item.ImageUrl" alt="Card image">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Title</h5>
+                                <p class="card-text">@item.Description</p>
+                                <p class="card-text"><small class="text-muted">@item.DateLastAccessed.ToString("yyyy-MM-dd hh:mm tt")</small></p>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
